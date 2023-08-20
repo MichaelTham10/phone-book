@@ -1,4 +1,4 @@
-// 'use client'
+'use client'
 import { useApollo } from '@/utils/apollo'
 import './globals.css'
 import type { Metadata } from 'next'
@@ -34,12 +34,12 @@ export default function RootLayout({
   }
 
   return (
-    <html lang="en">
-      <ApolloProvider client={client}>
+    <ApolloProvider client={client}>
+      <html lang="en">
         <body css={flexed} className={inter.className}>
-            {children}
+          {children}
         </body>
-      </ApolloProvider>
-    </html>
+      </html>
+    </ApolloProvider>
   )
 }

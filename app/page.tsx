@@ -1,4 +1,4 @@
-// 'use client'
+'use client'
 import { gql, useMutation, useQuery } from '@apollo/client'
 import { Contact, Contacts } from '@/interfaces/Contact';
 import { css } from '@emotion/react';

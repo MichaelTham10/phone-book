@@ -1,4 +1,4 @@
-// 'use client'
+'use client'
 import { Colors } from "@/colors/colors";
 import { DetailContact } from "@/interfaces/DetailContact";
 import { gql, useQuery } from "@apollo/client";
