@@ -1,5 +1,5 @@
 'use client'
-import { getApolloContext, gql, useApolloClient, useMutation, useQuery } from '@apollo/client'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import { Contact, Contacts } from '@/interfaces/Contact';
 import { css } from '@emotion/react';
 import { ContactContent } from './components/ContactContent';
@@ -201,8 +201,8 @@ export default function Home() {
         paginatedFavoriteContacts.splice(i, 1);
         localStorage.setItem(FavoriteContactList, JSON.stringify(favoriteContacts));
         await refetch();
-        router.push("/");
         alert("Success delete contact");
+        router.push("/");
       }
     } catch (e) {
       alert(`Failed to delete contact ${e}`);
@@ -233,8 +233,9 @@ export default function Home() {
 
         await refetch();
 
-        router.push("/");
         alert("Success update contact");
+
+        router.push("/");
       }
     } catch (e) {
       alert(`Failed to update contact ${e}`);
@@ -259,17 +260,16 @@ export default function Home() {
           item.id === req.id ? { ...item, first_name: req.first_name, last_name: req.last_name } : item
         ));
 
-        console.log("Before : ", contacts[idx]);
-
         contacts[idx].first_name = req.first_name;
         contacts[idx].last_name = req.last_name;
 
-        console.log("After : ", contacts[idx]);
-
         localStorage.setItem(GeneralContactList, JSON.stringify(contacts));
+
         await refetch();
-        router.push("/");
+
         alert("Success update contact");
+
+        router.push("/");
       }
     } catch (e) {
       alert(`Failed to update contact ${e}`);
@@ -283,8 +283,10 @@ export default function Home() {
         contacts.splice(i, 1);
         localStorage.setItem(GeneralContactList, JSON.stringify(contacts));
         await refetch();
-        router.push("/");
+
         alert("Success delete contact");
+
+        router.push("/");
       }
     } catch (e) {
       alert(`Failed to delete contact ${e}`);
