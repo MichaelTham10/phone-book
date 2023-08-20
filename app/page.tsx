@@ -444,7 +444,7 @@ export default function Home() {
         <div css={headerStyle}>
           <div css={titleWrapper}>
             <a onClick={() => setIsOpenForm((prev) => !prev)}>
-              <BiMenu color={Colors.blueSky} size={48} />
+              <BiMenu color={Colors.white} size={48} />
             </a>
             <p css={title}>Contacts</p>
           </div>
@@ -546,24 +546,6 @@ const fetchMoreText = css({
   color: Colors.white,
   marginBottom: 20,
   fontSize: 16,
-})
-
-const contactListOption = css({
-  display: "flex",
-  marginTop: 10,
-})
-
-const contactListOptionDiv = css({
-  color: Colors.white,
-  ":hover": {
-    color: Colors.blueSky
-  },
-  marginRight: 10,
-  cursor: "pointer"
-})
-
-const isOptionActive = css({
-  color: Colors.blueSky,
 })
 
 const titleWrapper = css({

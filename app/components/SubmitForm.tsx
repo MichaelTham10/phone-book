@@ -137,7 +137,7 @@ export const SubmitForm: React.FC<{
             <div css={formWrapper}>
                 <div css={titleWrapper}>
                     <a onClick={setCloseForm}>
-                        <BiX size={48} color={Colors.blueSky} />
+                        <BiX size={48} color={Colors.white} />
                     </a>
                     <p css={title}>Contact Form</p>
                 </div>
@@ -182,13 +182,6 @@ export const SubmitForm: React.FC<{
             </div>
         )
     }
-
-// const breakpoints = [{
-//     minWidth: 280,
-//     maxWidth: 1025,
-// }]
-
-// const mq = breakpoints.map(bp => `@media (min-width: ${bp.minWidth}px) and (max-width: ${bp.maxWidth}px)`)
 
 const title = css({
     color: Colors.blueSky,
