@@ -1,10 +1,10 @@
-'use client'
 import { Colors } from "@/colors/colors";
 import { DetailContact } from "@/interfaces/DetailContact";
-import { gql, useQuery } from "@apollo/client";
+import { gql, useApolloClient, useQuery } from "@apollo/client";
 import { css } from "@emotion/react";
 import { BiX } from "react-icons/bi";
 import { UtilityMessage } from "./UtilityMessage";
+import { useApollo } from "@/utils/apollo";
 
 const GET_CONTACT_DETAIL = gql`
     query GetContactDetail($id: Int!){
@@ -27,6 +27,7 @@ export const DetailModal: React.FC<{
     onClose,
     contactId,
 }) => {
+
         const { data, loading, error } = useQuery<DetailContact>(GET_CONTACT_DETAIL, {
             variables: { id: contactId }
         })

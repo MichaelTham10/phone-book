@@ -3,10 +3,9 @@ import { useApollo } from '@/utils/apollo'
 import './globals.css'
 // import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import { ApolloProvider } from '@apollo/client'
-import { loadErrorMessages, loadDevMessages } from "@apollo/client/dev";
 import { css } from '@emotion/react'
 import { Colors } from '@/colors/colors'
+import ApolloContext from '@/contexts/ApolloContext'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -25,21 +24,13 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const client = useApollo();
-
-  // Trace Errors
-  if (process.env.NODE_ENV !== "production") {
-    loadDevMessages();
-    loadErrorMessages();
-  }
-
   return (
-    <ApolloProvider client={client}>
+    <ApolloContext>
       <html lang="en">
         <body css={flexed} className={inter.className}>
           {children}
         </body>
       </html>
-    </ApolloProvider>
+    </ApolloContext>
   )
 }

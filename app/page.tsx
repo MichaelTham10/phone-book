@@ -1,5 +1,5 @@
 'use client'
-import { gql, useMutation, useQuery } from '@apollo/client'
+import { getApolloContext, gql, useApolloClient, useMutation, useQuery } from '@apollo/client'
 import { Contact, Contacts } from '@/interfaces/Contact';
 import { css } from '@emotion/react';
 import { ContactContent } from './components/ContactContent';
@@ -12,7 +12,6 @@ import { useRouter } from 'next/navigation';
 import { UtilityMessage } from './components/UtilityMessage';
 import { SubmitForm } from './components/SubmitForm';
 import { RequestContact } from '@/interfaces/RequestContact';
-
 
 const GET_CONTACT_LIST = gql`
   query GetContactList (
@@ -91,6 +90,7 @@ const UPDATE_CONTACT = gql`
 `
 
 export default function Home() {
+
   const [query, setQuery] = useState("");
 
   const [showDetail, setShowDetail] = useState(false);
@@ -106,7 +106,7 @@ export default function Home() {
           { last_name: { _ilike: `%${query}%` } }
         ],
       }
-    }
+    },
   });
 
   const [deleteContact, { loading: deleteLoading, error: deleteError }] = useMutation(DELETE_CONTACT);
