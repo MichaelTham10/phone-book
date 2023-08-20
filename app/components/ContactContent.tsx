@@ -46,7 +46,7 @@ export const ContactContent: React.FC<{
 
 const breakpoints = [{
     minWidth: 280,
-    maxWidth: 350,
+    maxWidth: 420,
 }]
 
 const mq = breakpoints.map(bp => `@media (min-width: ${bp.minWidth}px) and (max-width: ${bp.maxWidth}px)`)
