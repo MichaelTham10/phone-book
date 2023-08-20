@@ -1,4 +1,4 @@
-'use client'
+// 'use client'
 import { useApollo } from '@/utils/apollo'
 import './globals.css'
 import type { Metadata } from 'next'
