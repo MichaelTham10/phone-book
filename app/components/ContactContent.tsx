@@ -9,14 +9,12 @@ export const ContactContent: React.FC<{
     deleteContact: () => void,
     editContact: () => void,
     contact: Contact,
-    isFavorite: boolean,
 }> = ({
     contact,
     onOpenModal,
     addToFavorite,
     deleteContact,
     editContact,
-    isFavorite
 }) => {
 
         return (
@@ -30,7 +28,7 @@ export const ContactContent: React.FC<{
                 </a>
                 <div css={optionWrapper}>
                     <a css={iconMargin} onClick={addToFavorite}>
-                        <BiSolidStar size={24} color={isFavorite ? Colors.yellowStar : Colors.white} />
+                        <BiSolidStar size={24} color={contact.isFavorite ? Colors.yellowStar : Colors.white} />
                     </a>
                     <a css={iconMargin} onClick={editContact}>
                         <BiEdit size={24} />

@@ -99,7 +99,7 @@ export default function Home() {
 
   const { data, loading, fetchMore, refetch, error } = useQuery<Contacts>(GET_CONTACT_LIST, {
     variables: {
-      limit: 2, offset: 0,
+      limit: 10, offset: 0,
       where: {
         _or: [
           { first_name: { _ilike: `%${query}%` } },
@@ -115,8 +115,6 @@ export default function Home() {
 
   const [addContact, { loading: createLoading, error: createrError }] = useMutation(ADD_CONTACT);
 
-  const limitFavorite = 2;
-
   const [loadLoading, setLoadLoading] = useState(false);
 
   const [isOpenForm, setIsOpenForm] = useState(false);
@@ -124,12 +122,6 @@ export default function Home() {
   const [contacts, setContacts] = useState<Contact[]>([]);
 
   const [favoriteContacts, setFavoriteContacts] = useState<Contact[]>([]);
-
-  const [paginatedFavoriteContacts, setPaginatedFavoriteContacts] = useState<Contact[]>([]);
-
-  const [isLoadMore, setLoadMore] = useState(false);
-
-  const [isFavorite, setIsFavorite] = useState(false);
 
   const [contact, setContact] = useState<Contact>();
 
@@ -161,12 +153,14 @@ export default function Home() {
     }
   }, [data]);
 
+  // Store Favorite
   useEffect(() => {
     if (favoriteContacts.length > 0) {
       localStorage.setItem(FavoriteContactList, JSON.stringify(favoriteContacts));
     }
   }, [favoriteContacts]);
 
+  // Get General
   useEffect(() => {
     const stored = localStorage.getItem(GeneralContactList);
     if (stored) {
@@ -175,6 +169,7 @@ export default function Home() {
     }
   }, [data]);
 
+  // Get Favorite
   useEffect(() => {
     const stored = localStorage.getItem(FavoriteContactList);
     if (stored) {
@@ -183,22 +178,11 @@ export default function Home() {
     }
   }, [data]);
 
-  useEffect(() => {
-    const stored = localStorage.getItem(FavoriteContactList);
-    if (stored) {
-      const storedContacts: Contact[] = JSON.parse(stored);
-      if (storedContacts.length >= 0 && !isLoadMore) {
-        setPaginatedFavoriteContacts(favoriteContacts.slice(0, limitFavorite));
-      }
-    }
-  }, [favoriteContacts, isLoadMore])
-
   async function handleFavoriteDeleteContact(itemId: number, i: number) {
     try {
       const res = await deleteContact({ variables: { id: itemId } });
       if (res.data) {
         favoriteContacts.splice(i, 1);
-        paginatedFavoriteContacts.splice(i, 1);
         localStorage.setItem(FavoriteContactList, JSON.stringify(favoriteContacts));
         await refetch();
         alert("Success delete contact");
@@ -325,41 +309,31 @@ export default function Home() {
 
   async function handleLoadMore() {
     setLoadLoading(true);
-    if (isFavorite) {
-      if (paginatedFavoriteContacts.length < favoriteContacts.length) {
-        const currLength = paginatedFavoriteContacts.length;
-        const nextPagination = favoriteContacts.slice(currLength, currLength + limitFavorite);
-        setPaginatedFavoriteContacts((prev) => [...prev, ...nextPagination]);
-        setLoadMore(true);
-      }
-      setLoadLoading(false);
-    } else {
-      try {
-        await fetchMore({
-          variables: {
-            offset: data?.contact.length,
-            limit: 2,
-          },
-          updateQuery: (prev, { fetchMoreResult }) => {
-            if (!fetchMoreResult) return prev;
-            return {
-              contact: [
-                ...prev.contact, ...fetchMoreResult.contact
-              ]
-            }
+    try {
+      await fetchMore({
+        variables: {
+          offset: data?.contact.length,
+          limit: 2,
+        },
+        updateQuery: (prev, { fetchMoreResult }) => {
+          if (!fetchMoreResult) return prev;
+          return {
+            contact: [
+              ...prev.contact, ...fetchMoreResult.contact
+            ]
           }
-        });
-        setLoadLoading(false);
-      }
-      catch (e) {
-        setLoadLoading(false);
-        alert(`Failed to load more ${e}`);
-      }
+        }
+      });
+      setLoadLoading(false);
+    }
+    catch (e) {
+      setLoadLoading(false);
+      alert(`Failed to load more ${e}`);
     }
   }
 
   function renderContactList() {
-    const filteredFavoriteData = paginatedFavoriteContacts.filter(Q => Q.first_name.toLowerCase().includes(query.toLowerCase()) || Q.last_name.toLowerCase().includes(query.toLowerCase()));
+    const filteredFavoriteData = favoriteContacts.filter(Q => Q.first_name.toLowerCase().includes(query.toLowerCase()) || Q.last_name.toLowerCase().includes(query.toLowerCase()));
 
     if (loading || !data || !contacts || deleteLoading || createLoading || updateLoading) {
       return (
@@ -391,60 +365,69 @@ export default function Home() {
       )
     }
 
-    if ((!isFavorite && contacts.length === 0) || (isFavorite && filteredFavoriteData.length === 0)) {
-      return (
-        <UtilityMessage errorMessage={"Data is empty please add some contacts"} />
-      )
-    }
-
     return (
       <>
         {
-          isFavorite ?
-            filteredFavoriteData.map((item, i) =>
-              <ContactContent
-                key={i}
-                isFavorite={true}
-                onOpenModal={() => {
-                  setShowDetail(true);
-                  setContactId(item.id);
-                }}
-                addToFavorite={() => {
-                  setContacts(prevState => [...prevState, item]);
-                  favoriteContacts.splice(i, 1);
-                  paginatedFavoriteContacts.splice(i, 1);
-                  localStorage.setItem(FavoriteContactList, JSON.stringify(favoriteContacts));
-                }}
-                editContact={() => {
-                  setContact(item);
-                  setIsEditFavorite(true);
-                  setIsOpenForm(true);
-                }}
-                deleteContact={() => handleFavoriteDeleteContact(item.id, i)}
-                contact={item}
-              />)
-            :
-            contacts.map((item, i) =>
-              <ContactContent
-                key={i}
-                isFavorite={false}
-                onOpenModal={() => {
-                  setShowDetail(true);
-                  setContactId(item.id);
-                }}
-                addToFavorite={() => {
-                  setFavoriteContacts(prevState => [...prevState, item]);
-                  contacts.splice(i, 1);
-                  localStorage.setItem(GeneralContactList, JSON.stringify(contacts));
-                }}
-                editContact={() => {
-                  setContact(item);
-                  setIsEditFavorite(false);
-                  setIsOpenForm(true);
-                }}
-                deleteContact={() => handleGeneralDeleteContact(item.id, i)}
-                contact={item}
-              />)
+          filteredFavoriteData.map((item, i) =>
+            <ContactContent
+              key={i}
+              onOpenModal={() => {
+                setShowDetail(true);
+                setContactId(item.id);
+              }}
+              addToFavorite={() => {
+                const newGeneralContact: Contact = {
+                  __typename: item.__typename,
+                  created_at: item.created_at,
+                  first_name: item.first_name,
+                  id: item.id,
+                  last_name: item.last_name,
+                  phones: item.phones,
+                }
+                setContacts(prevState => [...prevState, newGeneralContact]);
+                favoriteContacts.splice(i, 1);
+                // paginatedFavoriteContacts.splice(i, 1);
+                localStorage.setItem(FavoriteContactList, JSON.stringify(favoriteContacts));
+              }}
+              editContact={() => {
+                setContact(item);
+                setIsEditFavorite(true);
+                setIsOpenForm(true);
+              }}
+              deleteContact={() => handleFavoriteDeleteContact(item.id, i)}
+              contact={item}
+            />)
+        }
+        {
+          contacts.map((item, i) =>
+            <ContactContent
+              key={i}
+              onOpenModal={() => {
+                setShowDetail(true);
+                setContactId(item.id);
+              }}
+              addToFavorite={() => {
+                const newFavoriteContact: Contact = {
+                  __typename: item.__typename,
+                  created_at: item.created_at,
+                  first_name: item.first_name,
+                  id: item.id,
+                  isFavorite: true,
+                  last_name: item.last_name,
+                  phones: item.phones,
+                }
+                setFavoriteContacts(prevState => [...prevState, newFavoriteContact]);
+                contacts.splice(i, 1);
+                localStorage.setItem(GeneralContactList, JSON.stringify(contacts));
+              }}
+              editContact={() => {
+                setContact(item);
+                setIsEditFavorite(false);
+                setIsOpenForm(true);
+              }}
+              deleteContact={() => handleGeneralDeleteContact(item.id, i)}
+              contact={item}
+            />)
         }
         <button onClick={() => handleLoadMore()} css={fetchMoreText}>{loadLoading ? "Loading..." : "Load more"}</button>
         {showDetail &&
@@ -472,10 +455,10 @@ export default function Home() {
             }} />
           </div>
         </div>
-        <div css={contactListOption}>
+        {/* <div css={contactListOption}>
           <a onClick={() => setIsFavorite(false)} css={[contactListOptionDiv, !isFavorite && isOptionActive]}>General Contact List</a>
           <a onClick={() => setIsFavorite(true)} css={[contactListOptionDiv, isFavorite && isOptionActive]}>Favorite Contact List</a>
-        </div>
+        </div> */}
         {renderContactList()}
       </div>
     </main>

@@ -10,6 +10,7 @@ export interface Contact {
     last_name: string;
     phones: Phone[];
     __typename:"contact"
+    isFavorite?: boolean;
 }
 
 export interface Contacts {
